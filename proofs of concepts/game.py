@@ -11,6 +11,8 @@ year = 1
 run = True
 while run:
     print(f'Year {year}')
+    if year == 9:
+        print('Alert! A new competitor will enter the market next year!')
     print(f'Money: {money}')
     print('demand function: p = 100 - Q')
     if year == 1:

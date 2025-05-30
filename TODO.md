@@ -1,0 +1,3 @@
+- Add appearance of opponent
+- Make web UI
+- Connect .py file and .vue
