@@ -1,10 +1,21 @@
 # Price war Game
 
-## What is it for?
+## What is it?
 
-### It is for second year project at HSE
+### It is second year project at HSE
 
 ### To run it, type 
 ```
 python game.py
+```
+
+### For web version:
+
+## Project setup
+```
+npm install
+```
+
+```
+npm run serve
 ```
