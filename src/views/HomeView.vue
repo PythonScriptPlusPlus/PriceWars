@@ -45,23 +45,27 @@
           {{ tab.name }}
         </p>
       </div>
-      <div class="rightbar__options">
-        <p
-          class="rightbar__data"
+      <div class="rightbar__component">
+        <component
           v-for="tab in tabs.filter(t => t.pressed)"
+          :is="tab.component"
           :key="tab.name"
-        >
-          {{ tab.description }}
-        </p>
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script>
-// import { ref } from 'vue';
+import ProductionTab from '@/components/ProductionTab.vue';
+import LobbyingTab from '@/components/LobbyingTab.vue';
+import LoremIpsumTab from '@/components/LoremIpsumTab.vue';
+import SettingsTab from '@/components/SettingsTab.vue';
 
 export default {
+  components: {
+    ProductionTab, LobbyingTab, LoremIpsumTab, SettingsTab,
+  },
   name: 'HomeView',
   data() {
     return {
@@ -86,22 +90,22 @@ Nim sunt duis aute magna voluptate. Amet cupidatat mollit minim eu labore ut est
       tabs: [
         {
           name: 'Производство',
-          description: 'Ea est esse non mollit culpa adipisicing do.',
+          component: 'production-tab',
           pressed: 1,
         },
         {
-          name: 'Лобирование',
-          description: 'Minim anim culpa anim esse qui reprehenderit consequat excepteur est duis ex aliquip eu veniam.',
+          name: 'Лоббирование',
+          component: 'lobbying-tab',
           pressed: 0,
         },
         {
           name: 'Lorem Ipsum',
-          description: 'Lorem culpa commodo sit tempor officia eu eu ex.',
+          component: 'lorem-ipsum-tab',
           pressed: 0,
         },
         {
           name: 'Настройки',
-          description: 'Incididunt deserunt pariatur consequat culpa veniam amet anim veniam minim mollit tempor sit.',
+          component: 'settings-tab',
           pressed: 0,
         },
       ],
@@ -257,12 +261,14 @@ Nim sunt duis aute magna voluptate. Amet cupidatat mollit minim eu labore ut est
     display: flex;
     overflow-x: auto;
     white-space: nowrap;
-    background-color: #999;
     width: fit-content;
-    // padding: 0 10px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #999;
+    width: calc(60vw - 10px);
   }
 
   &__tab {
+    background-color: #999;
     padding: 0 10px;
     margin: 0;
     // margin-right: 10px;
@@ -274,6 +280,12 @@ Nim sunt duis aute magna voluptate. Amet cupidatat mollit minim eu labore ut est
     &:last-child {
       margin-right: 0;
     }
+  }
+
+  &__component {
+    height: 100%;
+    width: 100%;
+    // background-color: skyblue;
   }
 }
 </style>
