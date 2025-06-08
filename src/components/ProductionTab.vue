@@ -6,6 +6,8 @@
           type="text"
           id="productionAmount"
           class="amount__input"
+          v-model="productionAmount"
+          @input="emitProductionAmount"
         />
         Сколько произвести в этот период
       </label>
@@ -16,6 +18,16 @@
 <script>
 export default {
   name: 'ProductionTab',
+  data() {
+    return {
+      productionAmount: '',
+    };
+  },
+  methods: {
+    emitProductionAmount() {
+      this.$emit('update-production', this.productionAmount);
+    },
+  },
 };
 </script>
 
