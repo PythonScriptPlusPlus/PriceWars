@@ -50,6 +50,7 @@
           v-for="tab in tabs.filter(t => t.pressed)"
           :is="tab.component"
           :key="tab.name"
+          @update-production="productionAmount = $event"
         />
       </div>
     </div>
@@ -84,9 +85,9 @@ Tempor voluptate qui voluptate ipsum do commodo fugiat fugiat sint elit ad excep
 Nim sunt duis aute magna voluptate. Amet cupidatat mollit minim eu labore ut est adipisicing in et tempor dolore. Ea ut nostrud incididunt sint consequat id proident ex anim et occaecat.`,
       healthSpent: 0,
       period: 1,
-      money: 1000000,
-      demand: '100 - Q',
-      costs: 50,
+      money: 0,
+      demand: '',
+      costs: 0,
       tabs: [
         {
           name: 'Производство',
@@ -109,12 +110,33 @@ Nim sunt duis aute magna voluptate. Amet cupidatat mollit minim eu labore ut est
           pressed: 0,
         },
       ],
+      test: '',
+      productionAmount: '',
     };
   },
   methods: {
-    endPeriod() {
+    async endPeriod() {
       this.healthSpent += 10;
       this.period += 1;
+      try {
+        const response = await fetch('http://127.0.0.1:5000/production', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ productionAmount: this.productionAmount }),
+        });
+        const data = await response.json();
+        if (data.money !== undefined) {
+          this.money = data.money;
+        }
+        if (data.costs !== undefined) {
+          this.costs = data.costs;
+        }
+        console.log('Server response:', data);
+      } catch (error) {
+        console.error('Error sending production amount:', error);
+      }
     },
     changeTab(selectedTab) {
       this.tabs = this.tabs.map((tab) => ({
@@ -122,6 +144,19 @@ Nim sunt duis aute magna voluptate. Amet cupidatat mollit minim eu labore ut est
         pressed: tab.name === selectedTab.name ? 1 : 0,
       }));
     },
+  },
+  mounted() {
+    fetch('http://127.0.0.1:5000/data') // URL of Flask server
+      .then((response) => response.json())
+      .then((data) => {
+        this.test = data;
+        this.costs = data.costs;
+        this.money = data.money;
+        this.demand = data.demand;
+        this.healthSpent = data.healthSpent;
+        this.period = data.period;
+      })
+      .catch((error) => console.error('Error fetching message:', error));
   },
 };
 </script>
