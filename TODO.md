@@ -1,3 +1,5 @@
+- make logs work
+- make so patience of investors increases only when player makes unoptimal moves
 - Add appearance of opponent
-- Make web UI
-- Connect .py file and .vue
+- Add lobbying options
+- implement learning mode

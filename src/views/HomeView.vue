@@ -21,13 +21,12 @@
       <button
         class="leftbar__button"
         @click="endPeriod"
+        @keyup.enter="endPeriod"
       >
         завершить период
       </button>
       <div class="leftbar__textbox">
-        <p class="leftbar__text">
-          {{ longText }}
-        </p>
+        <p class="leftbar__text" v-html="longText.replace(/\n/g, '<br>')"></p>
       </div>
     </div>
     <div class="rightbar">
@@ -71,19 +70,7 @@ export default {
   name: 'HomeView',
   data() {
     return {
-      longText: `Minim excepteur id enim ut cupidatat est. Ut adipisicing non cupidatat quis velit amet velit cupidatat exercitation.
-Qui ad consequat nisi dolore enim. Sint anim voluptate labore incididunt sit do ex pariatur.
-Sunt elit labore et irure veniam magna minim eiusmod non. Consequat officia cupidatat sunt irure dolore ipsum fugiat aliqua anim cupidatat tempor ea incididunt mollit.
-Magna nisi esse deserunt anim esse duis sunt cupidatat mollit veniam velit irure. In anim pariatur dolor ipsum labore ut eiusmod adipisicing.
-Commodo ad id mollit irure nisi fugiat.
-
-Amet aliqua consectetur fugiat anim ad dolore labore esse aliqua qui mollit dolore. Esse velit duis laborum consequat in non dolore elit nostrud ipsum irure cupidatat ipsum. Minim Lorem quis ullamco incididunt anim do elit nostrud.
-
-Sint nisi id voluptate irure nisi enim exercitation labore nostrud enim cillum. Nostrud commodo eiusmod esse adipisicing do dolor Lorem id mollit commodo excepteur amet duis. Cillum non magna quis reprehenderit sit id fugiat adipisicing labore laborum voluptate. Est aliqua pariatur incididunt esse mollit esse ipsum minim dolore nostrud sint laboris elit ea. Fugiat ipsum ex officia fugiat Lorem nulla laboris duis minim culpa.
-
-Tempor voluptate qui voluptate ipsum do commodo fugiat fugiat sint elit ad excepteur in. Aliquip labore ut eu ea non sit ut est. Eiusmod pariatur reprehenderit minim eu occaecat anim elit minim exercitation aliqua Lorem sit. Voluptate cupidatat laboris ea labore culpa nisi amet sit. Magna proident mollit veniam et nisi officia laborum. Magna aliqua nostrud eu sit id irure. Fugiat tempor veniam Lorem sit ipsum in.
-
-Nim sunt duis aute magna voluptate. Amet cupidatat mollit minim eu labore ut est adipisicing in et tempor dolore. Ea ut nostrud incididunt sint consequat id proident ex anim et occaecat.`,
+      longText: '',
       healthSpent: 0,
       period: 1,
       money: 0,
@@ -125,7 +112,10 @@ Nim sunt duis aute magna voluptate. Amet cupidatat mollit minim eu labore ut est
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ productionAmount: this.productionAmount }),
+          body: JSON.stringify({
+            productionAmount: this.productionAmount,
+            longText: this.longText,
+          }),
         });
         const data = await response.json();
         if (data.money !== undefined) {
@@ -133,6 +123,9 @@ Nim sunt duis aute magna voluptate. Amet cupidatat mollit minim eu labore ut est
         }
         if (data.costs !== undefined) {
           this.costs = data.costs;
+        }
+        if (data.long_text !== undefined) {
+          this.longText = data.long_text;
         }
         console.log('Server response:', data);
       } catch (error) {
@@ -151,6 +144,12 @@ Nim sunt duis aute magna voluptate. Amet cupidatat mollit minim eu labore ut est
       this.money = data.money;
       this.demand = data.demand;
       this.costs = data.costs;
+      this.longText = data.long_text;
+    },
+    handleGlobalEnter(e) {
+      if (e.key === 'Enter') {
+        this.endPeriod();
+      }
     },
   },
   mounted() {
@@ -163,8 +162,13 @@ Nim sunt duis aute magna voluptate. Amet cupidatat mollit minim eu labore ut est
         this.demand = data.demand;
         this.healthSpent = data.healthSpent;
         this.period = data.period;
+        this.longText = data.long_text;
       })
       .catch((error) => console.error('Error fetching message:', error));
+    window.addEventListener('keydown', this.handleGlobalEnter);
+  },
+  beforeUnmount() {
+    window.removeEventListener('keydown', this.handleGlobalEnter);
   },
 };
 </script>
@@ -289,7 +293,12 @@ Nim sunt duis aute magna voluptate. Amet cupidatat mollit minim eu labore ut est
 
   &__textbox {
     background-color: #999;
-    margin: 0 25px;
+    margin: 25px;
+    height: calc(100vh - 70px - 100px - 50px)
+  }
+
+  &__text {
+    margin: 0;
   }
 }
 
