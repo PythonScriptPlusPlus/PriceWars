@@ -51,6 +51,7 @@
           :is="tab.component"
           :key="tab.name"
           @update-production="productionAmount = $event"
+          @game-reset="handleGameReset"
         />
       </div>
     </div>
@@ -144,9 +145,16 @@ Nim sunt duis aute magna voluptate. Amet cupidatat mollit minim eu labore ut est
         pressed: tab.name === selectedTab.name ? 1 : 0,
       }));
     },
+    handleGameReset(data) {
+      this.healthSpent = data.healthSpent;
+      this.period = data.period;
+      this.money = data.money;
+      this.demand = data.demand;
+      this.costs = data.costs;
+    },
   },
   mounted() {
-    fetch('http://127.0.0.1:5000/data') // URL of Flask server
+    fetch('http://127.0.0.1:5000/data')
       .then((response) => response.json())
       .then((data) => {
         this.test = data;

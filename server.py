@@ -37,5 +37,19 @@ def receive_production():
         "costs": Player.cost[-1]
     })
 
+@app.route('/reset', methods=['POST'])
+def reset_game():
+    global Player
+    Player = Company(1000000, 0, [50])  # Reset to default values
+    data = {
+        'healthSpent': 0,
+        'period': Player.period,
+        'money': Player.money,
+        'demand': '100 - Q',
+        'costs': Player.cost[-1],
+        'overallProduction': Player.overall_production,
+    }
+    return jsonify(data)
+
 if __name__ == '__main__':
     app.run(debug=True)
