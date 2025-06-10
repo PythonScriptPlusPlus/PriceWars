@@ -1,5 +1,0 @@
-- make logs work
-- make so patience of investors increases only when player makes unoptimal moves
-- Add appearance of opponent
-- Add lobbying options
-- implement learning mode

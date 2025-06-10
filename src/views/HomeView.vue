@@ -4,8 +4,8 @@
       <div class="health__bar">
         <div
           class="health__bar--red"
-          :style="{ width: `calc(100% - ${healthSpent}% )`,
-            '--before-width': `${healthSpent*100/(100-healthSpent)}%` }"
+          :style="{ width: `calc(${health}% )`,
+            '--before-width': `${(100-health)/health*100}%` }"
         >
         </div>
         <p class="health__text">терпение инвесторов</p>
@@ -14,7 +14,7 @@
     <div class="info">
       <p class="info__item">Период: {{ period }}</p>
       <p class="info__item">Деньги: {{ money }}</p>
-      <p class="info__item">Функция спроса: p = {{ demand }}</p>
+      <p class="info__item">Функция спроса: p = {{ demand }} - Q</p>
       <p class="info__item">Затраты на производство: {{ costs }}</p>
     </div>
     <div class="leftbar">
@@ -71,7 +71,7 @@ export default {
   data() {
     return {
       longText: '',
-      healthSpent: 0,
+      health: 100,
       period: 1,
       money: 0,
       demand: '',
@@ -104,7 +104,6 @@ export default {
   },
   methods: {
     async endPeriod() {
-      this.healthSpent += 10;
       this.period += 1;
       try {
         const response = await fetch('http://127.0.0.1:5000/production', {
@@ -115,6 +114,7 @@ export default {
           body: JSON.stringify({
             productionAmount: this.productionAmount,
             longText: this.longText,
+            health: this.health,
           }),
         });
         const data = await response.json();
@@ -126,6 +126,9 @@ export default {
         }
         if (data.long_text !== undefined) {
           this.longText = data.long_text;
+        }
+        if (data.health !== undefined) {
+          this.health = data.health;
         }
         console.log('Server response:', data);
       } catch (error) {
@@ -139,7 +142,7 @@ export default {
       }));
     },
     handleGameReset(data) {
-      this.healthSpent = data.healthSpent;
+      this.health = data.health;
       this.period = data.period;
       this.money = data.money;
       this.demand = data.demand;
@@ -160,7 +163,7 @@ export default {
         this.costs = data.costs;
         this.money = data.money;
         this.demand = data.demand;
-        this.healthSpent = data.healthSpent;
+        this.health = data.health;
         this.period = data.period;
         this.longText = data.long_text;
       })
@@ -244,6 +247,7 @@ export default {
   padding: 5px;
   display: flex;
   overflow-x: auto;
+  overflow-y: hidden;
   white-space: nowrap;
 
   &::-webkit-scrollbar {
@@ -251,7 +255,7 @@ export default {
   }
 
   &::-webkit-scrollbar-track {
-    background: #ccc;
+    background: transparent;
   }
 
   &::-webkit-scrollbar-thumb {
@@ -294,11 +298,26 @@ export default {
   &__textbox {
     background-color: #999;
     margin: 25px;
-    height: calc(100vh - 70px - 100px - 50px)
+    height: calc(100vh - 70px - 100px - 50px);
+    overflow: auto; // Add this line to enable scrolling
+    padding: 10px;  // Optional: for better appearance
+
+    &::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #f0f0f0;
+    }
   }
 
   &__text {
     margin: 0;
+    word-break: break-word; // Optional: breaks long words
   }
 }
 
