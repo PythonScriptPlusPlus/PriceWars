@@ -3,19 +3,19 @@ from flask_cors import CORS
 from game import Company
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 # Create a global player instance
 Player = Company(1000000, 0, [50])
-log = 'Игра запущена. Вы можете начать производить продукцию.'
+log = 'Игра запущена. Выберите количество продукции для производства.'
 
 @app.route('/data', methods=['GET'])
 def get_data():
     data = {
-        'healthSpent': 0,
+        'health': Player.health,
         'period': Player.period,
         'money': Player.money,  # Use Player's money
-        'demand': '100 - Q',
+        'demand': 100,
         'costs': Player.cost[-1],  # Use Player's current cost
         'overallProduction': Player.overall_production,  # Use Player's overall production
         'long_text': log,
@@ -32,9 +32,10 @@ def receive_production():
         Player.q = int(production_amount)
         Player.produce()
         print(Player.money)
-        long_text = 'компания произвела {} единиц продукции'.format(Player.q) + '\n' + long_text
-        long_text = 'прибыль от произведённой продукции составила {} рублей'.format(Player.q * (100 - Player.q) - Player.cost[-1] * Player.q) + '\n' + long_text
+        long_text = 'В период {} компания произвела {} единиц продукции'.format(Player.period-1,Player.q) + '\n' + long_text
+        long_text = 'В период {} прибыль от произведённой продукции составила {} рублей'.format(Player.period-1,Player.q * (100 - Player.q) - Player.cost[-1] * Player.q) + '\n' + long_text
         log = long_text
+        print(Player.health)
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})
     return jsonify({
@@ -43,6 +44,7 @@ def receive_production():
         "money": Player.money,
         "costs": Player.cost[-1],
         "long_text": long_text,
+        "health": Player.health,
     })
 
 @app.route('/reset', methods=['POST'])
@@ -50,10 +52,10 @@ def reset_game():
     global Player, log
     Player = Company(1000000, 0, [50])  # Reset to default values
     data = {
-        'healthSpent': 0,
+        'health': 100,
         'period': Player.period,
         'money': Player.money,
-        'demand': '100 - Q',
+        'demand': 100,
         'costs': Player.cost[-1],
         'overallProduction': Player.overall_production,
         'long_text': 'Игра сброшена. Вы можете начать заново.',
