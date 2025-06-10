@@ -1,6 +1,13 @@
 <template>
   <div class="app">
-    <div class="health">
+    <div
+      class="health"
+      @mouseenter="showHealthPoints = true"
+      @mouseleave="showHealthPoints = false"
+      @focusin="showHealthPoints = true"
+      @focusout="showHealthPoints = false"
+      tabindex="0"
+    >
       <div class="health__bar">
         <div
           class="health__bar--red"
@@ -9,6 +16,10 @@
         >
         </div>
         <p class="health__text">терпение инвесторов</p>
+        <p
+          class="health__points"
+          v-show="showHealthPoints"
+        >{{ health }}/100</p>
       </div>
     </div>
     <div class="info">
@@ -70,6 +81,7 @@ export default {
   name: 'HomeView',
   data() {
     return {
+      showHealthPoints: false,
       longText: '',
       health: 100,
       period: 1,
@@ -236,6 +248,16 @@ export default {
     left: 15px;
     transform: translate(0, -50%);
   }
+
+  &__points {
+    z-index: 11;
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translate(0, -50%);
+    margin: 0;
+    font-weight: bold;
+  }
 }
 
 .info {
@@ -316,6 +338,7 @@ export default {
   }
 
   &__text {
+    // color: white;
     margin: 0;
     word-break: break-word; // Optional: breaks long words
   }

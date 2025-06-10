@@ -14,6 +14,7 @@ class Company:
     def produce(self):
         profit = (self.demand - self.q) * self.q - self.cost[-1] * self.q
         self.money += profit
+        self.money = round(self.money, 2)
         self.period += 1
         self.overall_production += self.q
 
@@ -22,7 +23,7 @@ class Company:
         if profit <= 0:
             self.health -= 25
         else:
-            self.health = min(100, self.health + profit/optimal_profit * 25)
+            self.health = round(min(100, self.health + profit/optimal_profit * 25))
 
 
         alpha = -0.05

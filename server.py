@@ -32,8 +32,8 @@ def receive_production():
         Player.q = int(production_amount)
         Player.produce()
         print(Player.money)
-        long_text = 'В период {} компания произвела {} единиц продукции'.format(Player.period-1,Player.q) + '\n' + long_text
-        long_text = 'В период {} прибыль от произведённой продукции составила {} рублей'.format(Player.period-1,Player.q * (100 - Player.q) - Player.cost[-1] * Player.q) + '\n' + long_text
+        long_text = 'В период <span style="color:skyblue">{}</span> компания произвела <span style="color:#ffc55b">{}</span> единиц продукции'.format(Player.period-1, Player.q) + '\n' + long_text
+        long_text = 'В период <span style="color:skyblue">{}</span> прибыль от произведённой продукции составила <span style="color:#39f139">{}</span> рублей'.format(Player.period-1,round(Player.q * (100 - Player.q) - Player.cost[-1] * Player.q,2)) + '\n' + long_text
         log = long_text
         print(Player.health)
     except Exception as e:
