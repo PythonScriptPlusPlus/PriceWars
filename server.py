@@ -3,10 +3,11 @@ from flask_cors import CORS
 from game import Company
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app)
 
 # Create a global player instance
 Player = Company(1000000, 0, [50])
+Opponent = None
 log = 'Игра запущена. Выберите количество продукции для производства.'
 
 @app.route('/data', methods=['GET'])
@@ -24,16 +25,25 @@ def get_data():
 
 @app.route('/production', methods=['POST'])
 def receive_production():
-    global log
+    global log, Opponent
     data = request.get_json()
     production_amount = data.get('productionAmount')
     long_text = data.get('longText')
     try:
         Player.q = int(production_amount)
-        Player.produce()
+        if Player.period < 10:
+            Player.produce()
+        else:
+            if Opponent is None:
+                Opponent = Company(1000, 0, [50], period=11, demand=100, opponent=True, additional_cost=100)
+            Player.produce(Opponent)
         print(Player.money)
-        long_text = 'В период <span style="color:skyblue">{}</span> компания произвела <span style="color:#ffc55b">{}</span> единиц продукции'.format(Player.period-1, Player.q) + '\n' + long_text
+        long_text = 'В период <span style="color:skyblue">{}</span> ваша компания произвела <span style="color:#ffc55b">{}</span> единиц продукции'.format(Player.period-1, Player.q) + '\n' + long_text
         long_text = 'В период <span style="color:skyblue">{}</span> прибыль от произведённой продукции составила <span style="color:#39f139">{}</span> рублей'.format(Player.period-1,round(Player.q * (100 - Player.q) - Player.cost[-1] * Player.q,2)) + '\n' + long_text
+        if Player.period == 9:
+            long_text = '<span style="color:red">ВНИМАНИЕ! В периоде 10 появится конкурирующая компания!</span>' + '\n' + long_text
+        if Player.period == 10:
+            long_text = '<span style="color:red">Появился конкурент на рынке</span>' + '\n' + long_text
         log = long_text
         print(Player.health)
     except Exception as e:
