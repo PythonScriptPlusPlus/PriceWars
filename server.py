@@ -35,17 +35,17 @@ def receive_production():
             Player.produce()
         else:
             if Opponent is None:
-                Opponent = Company(1000, 0, [50], period=11, demand=100, opponent=True, additional_cost=100)
+                Opponent = Company(1000, 0, [50], period=11, demand=100, opponent=True, additional_cost=50)
             Player.produce(Opponent)
-        print(Player.money)
+        # print(Player.money)
         long_text = 'В период <span style="color:skyblue">{}</span> ваша компания произвела <span style="color:#ffc55b">{}</span> единиц продукции'.format(Player.period-1, Player.q) + '\n' + long_text
-        long_text = 'В период <span style="color:skyblue">{}</span> прибыль от произведённой продукции составила <span style="color:#39f139">{}</span> рублей'.format(Player.period-1,round(Player.q * (100 - Player.q) - Player.cost[-1] * Player.q,2)) + '\n' + long_text
+        long_text = 'В период <span style="color:skyblue">{}</span> прибыль от произведённой продукции составила <span style="color:#39f139">{}</span> рублей'.format(Player.period-1,round(Player.q * (100 - Player.q) - Player.cost[-2] * Player.q,2)) + '\n' + long_text
         if Player.period == 9:
             long_text = '<span style="color:red">ВНИМАНИЕ! В периоде 10 появится конкурирующая компания!</span>' + '\n' + long_text
         if Player.period == 10:
             long_text = '<span style="color:red">Появился конкурент на рынке</span>' + '\n' + long_text
         log = long_text
-        print(Player.health)
+        # print(Player.health)
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})
     return jsonify({
@@ -59,7 +59,7 @@ def receive_production():
 
 @app.route('/reset', methods=['POST'])
 def reset_game():
-    global Player, log
+    global Player, log, Opponent
     Player = Company(1000000, 0, [50])  # Reset to default values
     data = {
         'health': 100,
@@ -70,6 +70,7 @@ def reset_game():
         'overallProduction': Player.overall_production,
         'long_text': 'Игра сброшена. Вы можете начать заново.',
     }
+    Opponent = None
     log = data['long_text']
     return jsonify(data)
 
