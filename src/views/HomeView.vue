@@ -37,7 +37,17 @@
         завершить период
       </button>
       <div class="leftbar__textbox">
-        <p class="leftbar__text" v-html="longText.replace(/\n/g, '<br>')"></p>
+        <p
+          class="leftbar__text"
+          v-if="health > 0"
+          v-html="longText.replace(/\n/g, '<br>')"
+        ></p>
+        <p
+          class="leftbar__text--defeat"
+          v-if="health <= 0"
+        >
+          Вы проиграли. Инвесторы потеряли терпение.
+        </p>
       </div>
     </div>
     <div class="rightbar">
@@ -117,6 +127,7 @@ export default {
   methods: {
     async endPeriod() {
       this.period += 1;
+      console.log('health', this.health);
       try {
         const response = await fetch('http://127.0.0.1:5000/production', {
           method: 'POST',
@@ -340,7 +351,14 @@ export default {
   &__text {
     // color: white;
     margin: 0;
-    word-break: break-word; // Optional: breaks long words
+    word-break: break-word;
+
+    &--defeat {
+      color: red;
+      font-weight: bold;
+      font-size: 3em;
+      margin: 0;
+    }
   }
 }
 
