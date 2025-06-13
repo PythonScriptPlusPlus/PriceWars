@@ -10,6 +10,7 @@ CORS(app)
 Player = Company(1000000, 0, [50])  # Initial values
 Opponent = None
 Opponent_window = 0
+demand_constant = 100
 log = 'Игра запущена. Выберите количество продукции для производства.'
 
 @app.route('/data', methods=['GET'])
@@ -27,7 +28,8 @@ def get_data():
 
 @app.route('/production', methods=['POST'])
 def receive_production():
-    global log, Opponent, Opponent_window, Player
+    global log, Opponent, Opponent_window, Player, demand_constant
+    Player.demand = demand_constant
     is_enemy_defeated = False
     data = request.get_json()
     production_amount = data.get('productionAmount')
@@ -38,7 +40,7 @@ def receive_production():
             line, is_enemy_defeated = Player.produce()
         else:
             if Player.period == 10 or (Opponent_window == -1 and Player.period > 2):
-                Opponent = Company(1000, 0, [50], period=1, demand=100, opponent=True, additional_cost=50)
+                Opponent = Company(1000, 0, [50], period=1, demand=demand_constant, opponent=True, additional_cost=50)
 
             line, is_enemy_defeated = Player.produce(Opponent)
         if is_enemy_defeated:
@@ -47,7 +49,7 @@ def receive_production():
             Opponent_window = random.randint(2,5)
         # print(Player.money)
         long_text = 'В период <span style="color:skyblue">{}</span> ваша компания произвела <span style="color:#ffc55b">{}</span> единиц продукции'.format(Player.period-1, Player.q) + '\n' + long_text
-        long_text = 'В период <span style="color:skyblue">{}</span> прибыль от произведённой продукции составила <span style="color:#39f139">{}</span> рублей'.format(Player.period-1,round(Player.q * (100 - Player.q) - Player.cost[-2] * Player.q,2)) + '\n' + long_text
+        long_text = 'В период <span style="color:skyblue">{}</span> прибыль от произведённой продукции составила <span style="color:#39f139">{}</span> рублей'.format(Player.period-1,round(Player.q * (Player.demand - Player.q) - Player.cost[-2] * Player.q,2)) + '\n' + long_text
         if Player.period == 9 or Opponent_window == 1:
             long_text = f'<span style="color:red">ВНИМАНИЕ! В периоде {Player.period+1} появится конкурирующая компания!</span>' + '\n' + long_text
         if Player.period == 10 or (Opponent_window == 0 and Player.period > 2):
@@ -56,6 +58,8 @@ def receive_production():
         long_text = line + long_text
         log = long_text
         Opponent_window -= 1
+        if Player.period % 10 == 0 and Player.period > 10:
+            demand_constant += 20
         # print(Player.health)
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})
@@ -66,6 +70,7 @@ def receive_production():
         "costs": Player.cost[-1],
         "long_text": long_text,
         "health": Player.health,
+        "demand": Player.demand,
     })
 
 @app.route('/reset', methods=['POST'])

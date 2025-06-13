@@ -153,6 +153,9 @@ export default {
         if (data.health !== undefined) {
           this.health = data.health;
         }
+        if (data.demand !== undefined) {
+          this.demand = data.demand;
+        }
         console.log('Server response:', data);
       } catch (error) {
         console.error('Error sending production amount:', error);
