@@ -11,6 +11,7 @@ Player = Company(1000000, 0, [50])  # Initial values
 Opponent = None
 Opponent_window = 0
 demand_constant = 100
+base_cost = 50
 log = 'Игра запущена. Выберите количество продукции для производства.'
 
 @app.route('/data', methods=['GET'])
@@ -40,7 +41,7 @@ def receive_production():
             line, is_enemy_defeated = Player.produce()
         else:
             if Player.period == 10 or (Opponent_window == -1 and Player.period > 2):
-                Opponent = Company(1000, 0, [50], period=1, demand=demand_constant, opponent=True, additional_cost=50)
+                Opponent = Company(1000, 0, [base_cost], period=1, demand=demand_constant, opponent=True, additional_cost=50)
 
             line, is_enemy_defeated = Player.produce(Opponent)
         if is_enemy_defeated:
@@ -89,6 +90,15 @@ def reset_game():
     Opponent = None
     log = data['long_text']
     return jsonify(data)
+
+@app.route('/increase_cost', methods=['POST'])
+def increase_cost():
+    global Player, base_cost
+    data = request.get_json()
+    amount = int(data.get('amount', 0))
+    base_cost += amount
+    Player.cost = [c + amount for c in Player.cost]
+    return jsonify({'costs': Player.cost[-1]})  # <-- Add this line
 
 if __name__ == '__main__':
     app.run(debug=True)

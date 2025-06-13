@@ -71,6 +71,7 @@
           :is="tab.component"
           :key="tab.name"
           @update-production="productionAmount = $event"
+          @price-increase="handlePriceIncrease"
           @game-reset="handleGameReset"
         />
       </div>
@@ -178,6 +179,19 @@ export default {
     handleGlobalEnter(e) {
       if (e.key === 'Enter') {
         this.endPeriod();
+      }
+    },
+    async handlePriceIncrease(amount) {
+      try {
+        const response = await fetch('http://127.0.0.1:5000/increase_cost', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ amount }),
+        });
+        const data = await response.json();
+        this.costs = data.costs;
+      } catch (e) {
+        console.error('Failed to increase cost:', e);
       }
     },
   },
@@ -329,6 +343,7 @@ export default {
     transform: translate(-50%,0);
     width: 70%;
     height: 3em;
+    cursor: pointer;
   }
 
   &__textbox {
