@@ -60,7 +60,7 @@ class Company:
             optimal_profit = (self.demand - optimal_q) * optimal_q - self.cost[-1] * optimal_q
 
             print(f"Your profit: {profit}, Your money: {self.money}")
-            print(f"Enemy profit: {enemy_profit}, Enemy money: {enemy.money}, Enemy q: {enemy.q}, Enemy period: {enemy.period}")
+            print(f"Enemy profit: {enemy_profit}, Enemy money: {enemy.money}, Enemy q: {enemy.q}, Enemy period: {enemy.period}, enemy cost: {enemy.cost[-1]}")
 
             self.health -= 10 * (enemy.period/4)**3
             if 10 * (enemy.period/4)**3 > profit/optimal_profit * 25:
