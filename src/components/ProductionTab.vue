@@ -55,6 +55,7 @@ export default {
   padding: 0 25px;
 
   &__item {
+    background-color: #ddd;
     display: flex;
     margin-top: 25px;
     border: 2px solid #ccc;

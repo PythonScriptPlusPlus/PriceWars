@@ -11,7 +11,7 @@ def solve_equation(a, b, c):
     return (root1, root2)
 
 class Company:
-    def __init__(self, money, q, cost, period=1, demand=100, opponent=False, additional_cost=0):
+    def __init__(self, money, q, cost, period=1, demand=100, opponent=False, additional_cost=0, one_time_cost=0):
         self.q = q
         self.money = money
         self.cost = cost
@@ -21,30 +21,38 @@ class Company:
         self.demand = demand
         self.opponent = opponent
         self.additional_cost = additional_cost
+        self.one_time_cost = one_time_cost
 
     # demand function: p = 100 - Q
     def produce(self, enemy=None):
         is_enemy_defeated = False
         if not enemy:
-            profit = (self.demand - self.q) * self.q - self.cost[-1] * self.q
+            profit = (self.demand - self.q) * self.q - self.cost[-1] * self.q - self.additional_cost - self.one_time_cost
+            self.one_time_cost = 0
             self.money += profit
             self.money = round(self.money, 2)
             self.period += 1
             self.overall_production += self.q
 
             optimal_q = (self.demand - self.cost[-1])/2
-            optimal_profit = (self.demand - optimal_q) * optimal_q - self.cost[-1] * optimal_q
+            optimal_profit = (self.demand - optimal_q) * optimal_q - self.cost[-1] * optimal_q - self.additional_cost
             exitLog = ''
         else:
-            enemy.q = max((self.demand - self.q-enemy.cost[-1])/2, 0)
+            if enemy.one_time_cost >= enemy.money:
+                exitLog = '<span style="color:#c22955">Конкурирующая компания не смогла войти на рынок, из-за высокой стоимости вхождения</span>\n'
+                is_enemy_defeated = True
+                self.produce()
+                return (exitLog, is_enemy_defeated)
+            enemy.q = max(min((self.demand - self.q-enemy.cost[-1])/2, (enemy.money-enemy.one_time_cost-enemy.additional_cost)/enemy.cost[-1]), 0)
             enemy.period += 1
-            profit = (self.demand - self.q - enemy.q) * self.q - self.cost[-1] * self.q - self.additional_cost
+            profit = (self.demand - self.q - enemy.q) * self.q - self.cost[-1] * self.q - self.additional_cost - self.one_time_cost
             self.money += profit
             self.money = round(self.money, 2)
             self.period += 1
             self.overall_production += self.q
 
-            enemy_profit = (self.demand - self.q - enemy.q) * enemy.q - enemy.cost[-1] * enemy.q - enemy.additional_cost
+            enemy_profit = (self.demand - self.q - enemy.q) * enemy.q - enemy.cost[-1] * enemy.q - enemy.additional_cost - enemy.one_time_cost
+            enemy.one_time_cost = 0
             enemy.money += enemy_profit
 
             if enemy.q == 0 or enemy_profit <= 0:
@@ -61,6 +69,7 @@ class Company:
 
             print(f"Your profit: {profit}, Your money: {self.money}")
             print(f"Enemy profit: {enemy_profit}, Enemy money: {enemy.money}, Enemy q: {enemy.q}, Enemy period: {enemy.period}, enemy cost: {enemy.cost[-1]}")
+            print(f"Enemy TC: {enemy.additional_cost} + {enemy.cost[-1]} * q")
 
             self.health -= 10 * (enemy.period/4)**3
             if 10 * (enemy.period/4)**3 > profit/optimal_profit * 25:
