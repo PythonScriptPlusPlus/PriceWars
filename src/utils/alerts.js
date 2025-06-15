@@ -106,7 +106,10 @@ const screens = [
 
 let screensIndex = 0;
 
-export function showWelcomeAlert(setLearningMode, manualScreenIndex = -1) {
+export function showWelcomeAlert(setLearningMode, manualScreenIndex = -1, newGame = false) {
+  if (newGame) {
+    screensIndex = 0;
+  }
   if (screensIndex >= screens.length) {
     return;
   }

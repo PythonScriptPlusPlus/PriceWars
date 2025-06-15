@@ -18,7 +18,7 @@ entry_cost = 0
 enemy_modifier = 1
 property_price = 1000
 player_plots = []
-opponent_adcost = 0
+opponent_adcost = 50
 
 log = 'Игра запущена. Выберите количество продукции для производства.'
 

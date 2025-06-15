@@ -207,6 +207,41 @@ export default {
       this.demand = data.demand;
       this.costs = data.costs;
       this.longText = data.long_text;
+
+      if (this.period === 1 && this.learningMode) {
+        console.log(this.learningMode);
+        showWelcomeAlert(this.setLearningMode, -1, true);
+      }
+      this.tabs = [
+        {
+          name: 'Производство',
+          component: 'production-tab',
+          pressed: 0,
+          index: 0,
+          new: false,
+        },
+        {
+          name: 'Лоббирование',
+          component: 'lobbying-tab',
+          pressed: 0,
+          index: 1,
+          new: true,
+        },
+        {
+          name: 'Собственность',
+          component: 'property-tab',
+          pressed: 0,
+          index: 2,
+          new: true,
+        },
+        {
+          name: 'Настройки',
+          component: 'settings-tab',
+          pressed: 1,
+          index: 3,
+          new: false,
+        },
+      ];
     },
     handleGlobalEnter(e) {
       if (e.key === 'Enter' && this.health > 0) {
