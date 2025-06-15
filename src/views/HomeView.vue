@@ -78,6 +78,8 @@
           @update:property-price="propertyPrice = $event"
           @update:costs="costs = $event"
           :PropertyPrice="propertyPrice"
+          :learningMode="learningMode"
+          @update:learning-mode="learningMode = $event"
         />
       </div>
     </div>
@@ -89,6 +91,7 @@ import ProductionTab from '@/components/ProductionTab.vue';
 import LobbyingTab from '@/components/LobbyingTab.vue';
 import PropertyTab from '@/components/PropertyTab.vue';
 import SettingsTab from '@/components/SettingsTab.vue';
+import { showWelcomeAlert } from '@/utils/alerts';
 
 export default {
   components: {
@@ -97,6 +100,7 @@ export default {
   name: 'HomeView',
   data() {
     return {
+      learningMode: true,
       propertyPrice: 400,
       showHealthPoints: false,
       longText: '',
@@ -109,22 +113,30 @@ export default {
         {
           name: 'Производство',
           component: 'production-tab',
-          pressed: 0,
+          pressed: 1,
+          index: 0,
+          new: false,
         },
         {
           name: 'Лоббирование',
           component: 'lobbying-tab',
           pressed: 0,
+          index: 1,
+          new: true,
         },
         {
           name: 'Собственность',
           component: 'property-tab',
-          pressed: 1,
+          pressed: 0,
+          index: 2,
+          new: true,
         },
         {
           name: 'Настройки',
           component: 'settings-tab',
           pressed: 0,
+          index: 3,
+          new: false,
         },
       ],
       test: '',
@@ -170,12 +182,22 @@ export default {
       } catch (error) {
         console.error('Error sending production amount:', error);
       }
+      if ((this.period === 2 || this.period === 9) && this.learningMode) {
+        showWelcomeAlert(this.setLearningMode);
+      }
     },
     changeTab(selectedTab) {
-      this.tabs = this.tabs.map((tab) => ({
-        ...tab,
-        pressed: tab.name === selectedTab.name ? 1 : 0,
-      }));
+      this.tabs = this.tabs.map((tab) => {
+        // If tab.new is true and will be set to false, log it
+        if (tab.name === selectedTab.name && tab.new === true && this.learningMode) {
+          showWelcomeAlert(this.setLearningMode, 6 + selectedTab.index);
+        }
+        return {
+          ...tab,
+          pressed: tab.name === selectedTab.name ? 1 : 0,
+          new: tab.name === selectedTab.name ? false : tab.new,
+        };
+      });
     },
     handleGameReset(data) {
       this.propertyPrice = data.property_price;
@@ -185,6 +207,41 @@ export default {
       this.demand = data.demand;
       this.costs = data.costs;
       this.longText = data.long_text;
+
+      if (this.period === 1 && this.learningMode) {
+        console.log(this.learningMode);
+        showWelcomeAlert(this.setLearningMode, -1, true);
+      }
+      this.tabs = [
+        {
+          name: 'Производство',
+          component: 'production-tab',
+          pressed: 0,
+          index: 0,
+          new: false,
+        },
+        {
+          name: 'Лоббирование',
+          component: 'lobbying-tab',
+          pressed: 0,
+          index: 1,
+          new: true,
+        },
+        {
+          name: 'Собственность',
+          component: 'property-tab',
+          pressed: 0,
+          index: 2,
+          new: true,
+        },
+        {
+          name: 'Настройки',
+          component: 'settings-tab',
+          pressed: 1,
+          index: 3,
+          new: false,
+        },
+      ];
     },
     handleGlobalEnter(e) {
       if (e.key === 'Enter' && this.health > 0) {
@@ -204,6 +261,9 @@ export default {
         console.error('Failed to increase cost:', e);
       }
     },
+    setLearningMode(val) {
+      this.learningMode = val;
+    },
   },
   mounted() {
     fetch('http://127.0.0.1:5000/data')
@@ -217,6 +277,12 @@ export default {
         this.period = data.period;
         this.propertyPrice = data.property_price;
         this.longText = data.long_text;
+
+        // Now period is updated, so check here:
+        if (this.period === 1 && this.learningMode) {
+          console.log(this.learningMode);
+          showWelcomeAlert(this.setLearningMode);
+        }
       })
       .catch((error) => console.error('Error fetching message:', error));
     window.addEventListener('keydown', this.handleGlobalEnter);
@@ -227,7 +293,23 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
+.alert {
+  &__header {
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    font-size: 1.5em;
+    margin: 0;
+    color: #333;
+  }
+
+  &__text {
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    font-size: 1em;
+    margin: 0;
+    color: #666;
+  }
+}
+
 .app {
   height: 100vh;
   width: 100vw;

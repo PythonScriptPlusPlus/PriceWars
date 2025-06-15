@@ -4,6 +4,7 @@ import math
 def solve_equation(a, b, c):
     discriminant = b**2 - 4*a*c
     if discriminant < 0:
+        print('no work',b**2, 4*a*c, discriminant)
         return None  # No real roots
     root1 = (-b + math.sqrt(discriminant)) / (2 * a)
     root2 = (-b - math.sqrt(discriminant)) / (2 * a)
@@ -67,7 +68,7 @@ class Company:
             optimal_q = min(solve_equation(1, 2*(self.cost[-1]-self.demand), self.demand**2 + self.cost[-1]**2 - 4*enemy.additional_cost - 2*self.cost[-1]*self.demand))
             optimal_profit = (self.demand - optimal_q) * optimal_q - self.cost[-1] * optimal_q
 
-            print(f"Your profit: {profit}, Your money: {self.money}")
+            print(f"Your profit: {profit}, Your money: {self.money}, your optimal q: {optimal_q}, your optimal profit: {optimal_profit}")
             print(f"Enemy profit: {enemy_profit}, Enemy money: {enemy.money}, Enemy q: {enemy.q}, Enemy period: {enemy.period}, enemy cost: {enemy.cost[-1]}")
             print(f"Enemy TC: {enemy.additional_cost} + {enemy.cost[-1]} * q")
 
