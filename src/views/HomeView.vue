@@ -33,6 +33,7 @@
         class="leftbar__button"
         @click="endPeriod"
         @keyup.enter="endPeriod"
+        :disabled="health <= 0"
       >
         завершить период
       </button>
@@ -73,6 +74,10 @@
           @update-production="productionAmount = $event"
           @price-increase="handlePriceIncrease"
           @game-reset="handleGameReset"
+          @update:money="money = $event"
+          @update:property-price="propertyPrice = $event"
+          @update:costs="costs = $event"
+          :PropertyPrice="propertyPrice"
         />
       </div>
     </div>
@@ -82,16 +87,17 @@
 <script>
 import ProductionTab from '@/components/ProductionTab.vue';
 import LobbyingTab from '@/components/LobbyingTab.vue';
-import LoremIpsumTab from '@/components/LoremIpsumTab.vue';
+import PropertyTab from '@/components/PropertyTab.vue';
 import SettingsTab from '@/components/SettingsTab.vue';
 
 export default {
   components: {
-    ProductionTab, LobbyingTab, LoremIpsumTab, SettingsTab,
+    ProductionTab, LobbyingTab, PropertyTab, SettingsTab,
   },
   name: 'HomeView',
   data() {
     return {
+      propertyPrice: 400,
       showHealthPoints: false,
       longText: '',
       health: 100,
@@ -103,7 +109,7 @@ export default {
         {
           name: 'Производство',
           component: 'production-tab',
-          pressed: 1,
+          pressed: 0,
         },
         {
           name: 'Лоббирование',
@@ -111,9 +117,9 @@ export default {
           pressed: 0,
         },
         {
-          name: 'Lorem Ipsum',
-          component: 'lorem-ipsum-tab',
-          pressed: 0,
+          name: 'Собственность',
+          component: 'property-tab',
+          pressed: 1,
         },
         {
           name: 'Настройки',
@@ -157,6 +163,9 @@ export default {
         if (data.demand !== undefined) {
           this.demand = data.demand;
         }
+        if (data.property_price !== undefined) {
+          this.propertyPrice = data.property_price;
+        }
         console.log('Server response:', data);
       } catch (error) {
         console.error('Error sending production amount:', error);
@@ -169,6 +178,7 @@ export default {
       }));
     },
     handleGameReset(data) {
+      this.propertyPrice = data.property_price;
       this.health = data.health;
       this.period = data.period;
       this.money = data.money;
@@ -177,7 +187,7 @@ export default {
       this.longText = data.long_text;
     },
     handleGlobalEnter(e) {
-      if (e.key === 'Enter') {
+      if (e.key === 'Enter' && this.health > 0) {
         this.endPeriod();
       }
     },
@@ -205,6 +215,7 @@ export default {
         this.demand = data.demand;
         this.health = data.health;
         this.period = data.period;
+        this.propertyPrice = data.property_price;
         this.longText = data.long_text;
       })
       .catch((error) => console.error('Error fetching message:', error));
@@ -394,7 +405,7 @@ export default {
     width: fit-content;
     padding-bottom: 5px;
     border-bottom: 2px solid #999;
-    width: calc(60vw - 10px);
+    width: calc(60vw + 10px);
   }
 
   &__tab {
