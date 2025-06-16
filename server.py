@@ -1,7 +1,8 @@
 import random
 import traceback
 import numpy as np
-from flask import Flask, jsonify, request
+import os
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from game import Company
 
@@ -171,3 +172,11 @@ def buy_property():
         "costs": Player.cost[-1],  # <-- Add this line
     }
     return jsonify(response)
+
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve_vue_app(path):
+    if path != "" and os.path.exists("dist/" + path):
+        return send_from_directory('dist', path)
+    else:
+        return send_from_directory('dist', 'index.html')
