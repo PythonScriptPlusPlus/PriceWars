@@ -6,7 +6,7 @@ from flask_cors import CORS
 from game import Company
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "http://5.180.174.128"}})
 
 # Create a global player instance
 Player = Company(1000000, 0, [50])  # Initial values
@@ -171,6 +171,3 @@ def buy_property():
         "costs": Player.cost[-1],  # <-- Add this line
     }
     return jsonify(response)
-
-if __name__ == '__main__':
-    app.run(debug=True)
