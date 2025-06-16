@@ -29,7 +29,7 @@ export default {
   methods: {
     async resetGame() {
       try {
-        const response = await fetch('http://127.0.0.1:5000/reset', {
+        const response = await fetch('http://5.180.174.128:5000/reset', {
           method: 'POST',
         });
         const data = await response.json();

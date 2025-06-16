@@ -7,8 +7,10 @@ from flask_cors import CORS
 from game import Company
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://5.180.174.128"}})
-
+CORS(app, resources={r"/*": {"origins": [
+    "http://5.180.174.128",
+    "http://5.180.174.128:8080"
+]}})
 # Create a global player instance
 Player = Company(1000000, 0, [50])  # Initial values
 Opponent = None
