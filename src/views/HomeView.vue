@@ -148,7 +148,7 @@ export default {
       this.period += 1;
       console.log('health', this.health);
       try {
-        const response = await fetch('http://5.180.174.128:5000/production', {
+        const response = await fetch('/production', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -250,7 +250,7 @@ export default {
     },
     async handlePriceIncrease(amount) {
       try {
-        const response = await fetch('http://5.180.174.128:5000/increase_cost', {
+        const response = await fetch('/increase_cost', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ amount }),
@@ -266,7 +266,7 @@ export default {
     },
   },
   mounted() {
-    fetch('http://5.180.174.128:5000/data')
+    fetch('/data')
       .then((response) => response.json())
       .then((data) => {
         this.test = data;

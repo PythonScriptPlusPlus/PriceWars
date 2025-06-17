@@ -53,7 +53,7 @@ export default {
     async invest(index) {
       this.policies[index].invested = true;
       try {
-        const response = await fetch('http://5.180.174.128:5000/invest', {
+        const response = await fetch('/invest', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

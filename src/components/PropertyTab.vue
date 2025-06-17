@@ -30,7 +30,7 @@ export default {
     };
   },
   mounted() {
-    fetch('http://5.180.174.128:5000/data')
+    fetch('/data')
       .then((response) => response.json())
       .then((data) => {
         this.playersPlots = data.playersPlots;
@@ -53,7 +53,7 @@ export default {
   methods: {
     async buyProperty() {
       try {
-        const response = await fetch('http://5.180.174.128:5000/buy_property', {
+        const response = await fetch('/buy_property', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
